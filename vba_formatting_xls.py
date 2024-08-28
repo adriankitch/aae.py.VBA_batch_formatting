@@ -113,12 +113,13 @@ outputfile = ''
 
 
 columns = [column[0] for column in cursor.description]
-
+last_survey_id = -1
 
 for row in cursor:
     project_id = row[0]
     site_name  = '{0} | {1}'.format(row[10], row[11])
     discipline = (row[45]).lower()
+
 
 
     if prev_discipline != discipline:
@@ -153,10 +154,13 @@ for row in cursor:
         prev_discipline = discipline
 
 
-    if site_name != prev_site_name: ## and row[28] != 175: #new site only with sample info (175 = No Fish)
+    if (site_name != prev_site_name) or (last_survey_id != row[49]): ## and row[28] != 175: #new site only with sample info (175 = No Fish)
 
         print('{0} | {1}'.format(row[10], row[11]))
         last_method_idx = -1
+        last_survey_id = row[49]
+
+
         for i in range(21, 26):
             if str(row[i]) != 'None':
                 last_method_idx = i
