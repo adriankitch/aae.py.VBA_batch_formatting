@@ -91,6 +91,7 @@ sheet2 = None
 
 cursor = conn.cursor()
 cursor.execute(sql)
+input_count = 0
 
 
 ##### TO FIND DRIVER NAMES print(pyodbc.drivers()) ###########
@@ -119,7 +120,7 @@ for row in cursor:
     project_id = row[0]
     site_name  = '{0} | {1}'.format(row[10], row[11])
     discipline = (row[45]).lower()
-
+    input_count += 1
 
 
     if prev_discipline != discipline:
@@ -128,7 +129,8 @@ for row in cursor:
 
         wb = None
         sheet = None
-        rw = 1
+        rw1 = 1
+        rw2 = 1
         outputfile = "vbaProject_" + str(project_id)  + "_import_" + discipline.replace(' ', '_') + "_" + ts + ".xls"
         print('***' + outputfile)
         styleNorm = xlwt.easyxf()
@@ -204,6 +206,10 @@ for row in cursor:
                         sample_date = ''
 
 ##                    print(i)
+                    if first_method_detail < 1:
+                        writeToExcel(rw2, row, styleNorm, False)
+                        rw2 += 1
+##                        print(row[29])
 
                     if first_method_detail < 0 and i != last_method_idx:
 
@@ -252,9 +258,8 @@ for row in cursor:
 ##                                writeToExcel(rw, row, styleNorm, False)
 ##                                rw += 1
 
-                    writeToExcel(rw, outline, styleNorm)
-                    writeToExcel(rw, row, styleNorm, False)
-                    rw += 1
+                    writeToExcel(rw1, outline, styleNorm)
+                    rw1 += 1
     ##                    else:
 ##                        print('skipped None method {0}'.format(i))
 
@@ -267,9 +272,10 @@ for row in cursor:
             else:
                 outline = [str(row[0]),"","",row[3],"","","",str(row[5]),str(row[6]),str(row[7]),row[8],row[9],row[10],row[11],str(row[12]),str(row[52]),row[13],row[14],row[15],str(row[16]),str(row[17]),"","",str(row[18]),"","",str(row[19]),"","","","",row[27],row[27],str(row[28]),row[29],str(row[30]),"",checkNone(str(row[31])),checkNone(str(row[32])),"","","","","","","","","","","","","","","","","",row[44]]
 
-            writeToExcel(rw, outline, styleNorm)
-            writeToExcel(rw, row, styleNorm, False)
-            rw += 1
+            writeToExcel(rw1, outline, styleNorm)
+            writeToExcel(rw2, row, styleNorm, False)
+            rw1 += 1
+            rw2 += 1
 
         prev_site_name = site_name
 
@@ -280,9 +286,12 @@ for row in cursor:
         else:
             outline = ["","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",row[27],row[27],str(row[28]),row[29],str(row[30]),"",checkNone(str(row[31])),checkNone(str(row[32])),"","","","","","","","","","","","","","","","","",row[44]]
 
-        writeToExcel(rw, outline, styleNorm)
-        writeToExcel(rw, row, styleNorm, False)
-        rw += 1
+        writeToExcel(rw1, outline, styleNorm)
+        writeToExcel(rw2, row, styleNorm, False)
+        rw1 += 1
+        rw2 += 1
+
+print('*** {0} rows processed'.format(str(input_count)))
 
 wb.save(outpath + outputfile)
 cursor.close()
