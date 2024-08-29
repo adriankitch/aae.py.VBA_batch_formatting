@@ -88,6 +88,7 @@ conn = dbconn.conn
 fo = None
 sheet = None
 sheet2 = None
+sheet3 = None
 
 cursor = conn.cursor()
 cursor.execute(sql)
@@ -141,6 +142,8 @@ for row in cursor:
 ##        sheetname2 = 'AAE_DB_DATA'
         sheet = wb.add_sheet('VBA_BATCH_READY_01')
         sheet2 = wb.add_sheet('AAE_DB_DATA')
+        sheet3 = wb.add_sheet('AAE_DB_SQL')
+        sheet3.write(0, 0, '{0} WHERE lower(primary_discipline) LIKE \'{1}\''.format(sql, discipline), styleNorm)
 
         #write header line for worksheet
         ##                   print str(6)
@@ -292,6 +295,8 @@ for row in cursor:
         rw2 += 1
 
 print('*** {0} rows processed'.format(str(input_count)))
+print('')
+print('ENSURE surveys updated to SUBMITTED level in vba_submission column (VBA_SUBMITTED_RECORDS_UPDATE.sql)')
 
 wb.save(outpath + outputfile)
 cursor.close()
