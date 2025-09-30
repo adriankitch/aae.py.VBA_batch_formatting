@@ -13,7 +13,7 @@
 import pyodbc
 import os.path
 import xlwt
-import datetime
+from datetime import datetime
 import database_conn as dbconn
 #from dateutil.relativedelta import relativedelta
 
@@ -106,7 +106,8 @@ vbaMarineFields =["VBA Project ID","VBA Permit ID","VBA Reference Document ID","
 ##writeData(fo, outpath, file, outline, header)
 
 
-ts = getdatetime()
+##ts = getdatetime()
+ts = datetime.now().strftime("%y%m%d_%H%M")
 wb = None
 
 prev_site_name = -1
@@ -132,7 +133,9 @@ for row in cursor:
         sheet = None
         rw1 = 1
         rw2 = 1
-        outputfile = "vbaProject_" + str(project_id)  + "_import_" + discipline.replace(' ', '_') + "_" + ts + ".xls"
+##        outputfile = "vbaProject_" + str(project_id)  + "_import_" + discipline.replace(' ', '_') + "_" + ts + ".xls"
+        out_disp = discipline.replace(' ', '_')
+        outputfile = f"vbaProject_{project_id}_import_{out_disp}_{ts}.xls"
         print('***' + outputfile)
         styleNorm = xlwt.easyxf()
         encoding = 'latin1'
@@ -298,7 +301,7 @@ print('*** {0} rows processed'.format(str(input_count)))
 print('')
 print('ENSURE surveys updated to SUBMITTED level in vba_submission column (VBA_SUBMITTED_RECORDS_UPDATE.sql)')
 
-wb.save(outpath + outputfile)
+wb.save(os.path.join(outpath,outputfile))
 cursor.close()
 conn.close()
 
